@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
@@ -96,5 +97,38 @@ namespace NZWalks.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
 
         }
+
+        // PUT: https://localhost:portnumber/api/regions/{id}
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        {
+            // Obtener data de la base de datos mediante DomainModel
+            var regionDomain = dbContext.Regions.FirstOrDefault(r => r.Id == id);
+
+            if (regionDomain == null)
+            {
+                return NotFound();
+            }
+
+            // Map or Convert DTO to Domain Model
+            regionDomain.Code = updateRegionRequestDto.Code;
+            regionDomain.Name = updateRegionRequestDto.Name;
+            regionDomain.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
+
+            dbContext.SaveChanges();
+
+            // Map Domain model back to DTO
+            var regionDto = new RegionDto
+            {
+                Id = regionDomain.Id,
+                Code = regionDomain.Code,
+                Name = regionDomain.Name,
+                RegionImageUrl = regionDomain.RegionImageUrl,
+            };
+
+            return Ok(regionDto);
+        }
+
     }
 }

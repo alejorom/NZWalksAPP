@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NZWalks.API.Data;
+using NZWalks.API.Models.DTO;
 
 namespace NZWalks.API.Controllers
 {
@@ -20,8 +21,24 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var regions = dbContext.Regions.ToList();
-            return Ok(regions);
+            // Obtener data de la base de datos mediante DomainModel
+            var regionsDomain = dbContext.Regions.ToList();
+
+            // Convertir DomainModel a DTO
+            var regionDto = new List<RegionDto>();
+            foreach (var regionDomain in regionsDomain)
+            {
+                regionDto.Add( new RegionDto
+                {
+                    Id = regionDomain.Id,
+                    Name = regionDomain.Name,
+                    Code = regionDomain .Code,
+                    RegionImageUrl = regionDomain.RegionImageUrl,
+                });
+            }
+
+            // Retornar DTO
+            return Ok(regionDto);
         }
 
         // GET: https://localhost:portnumber/api/regions/{id}
@@ -29,13 +46,25 @@ namespace NZWalks.API.Controllers
         [Route("{id:Guid}")]
         public IActionResult GetById([FromRoute] Guid id)
         {
-            var region = dbContext.Regions.FirstOrDefault(r => r.Id == id);
+            // Obtener data de la base de datos mediante DomainModel
+            var regionDomain = dbContext.Regions.FirstOrDefault(r => r.Id == id);
 
-            if(region == null)
+            if(regionDomain == null)
             {
                 return NotFound();
             }
-            return Ok(region);
+
+            // Convertir DomainModel a DTO
+            var regionDto = new RegionDto
+            {
+                Id = regionDomain.Id,
+                Name = regionDomain.Name,
+                Code = regionDomain.Code,
+                RegionImageUrl = regionDomain.RegionImageUrl,
+            };
+
+            // Retornar DTO
+            return Ok(regionDto);
         }
     }
 }

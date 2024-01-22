@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Data;
+using NZWalks.API.Mapper;
 using NZWalks.API.Repositories.Implementation;
 using NZWalks.API.Repositories.Interface;
 
@@ -16,6 +17,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Inject repository pattern
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+
+// Inject automapper profile
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 

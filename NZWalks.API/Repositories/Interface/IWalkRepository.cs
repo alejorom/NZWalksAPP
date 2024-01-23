@@ -1,5 +1,4 @@
 ﻿using NZWalks.API.Models.Domain;
-using System.Runtime.InteropServices;
 
 namespace NZWalks.API.Repositories.Interface
 {
@@ -8,5 +7,6 @@ namespace NZWalks.API.Repositories.Interface
         Task<Walk> CreateAsync(Walk walk);
         Task<List<Walk>> GetAllAsync();
         Task<Walk?> GetByIdAsync(Guid id);
+        Task<Walk?> UpdateAsync(Guid id, Walk walk);
     }
 }

@@ -38,5 +38,18 @@ namespace NZWalks.API.Controllers
             }
             return BadRequest("User was not registered!");
         }
+
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(LoginRequestDto loginRequestDto)
+        {
+            var user = await userManager.FindByEmailAsync(loginRequestDto.Username);
+            if (user == null) return BadRequest("Invalid user name or password!");
+
+            var passwordValid = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+            if (!passwordValid) return BadRequest("Invalid user name or password!");
+
+            return Ok("User was logged in!");
+        }
     }
 }

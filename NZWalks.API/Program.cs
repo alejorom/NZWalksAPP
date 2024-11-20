@@ -25,6 +25,7 @@ builder.Services.AddDbContext<AuthenticationDbContext>(options =>
 // Inject repository pattern
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IWalkRepository, WalkRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Inject automapper profile
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

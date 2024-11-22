@@ -6,13 +6,23 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NZWalks.API.Data;
 using NZWalks.API.Mapper;
+using NZWalks.API.Middlewares;
 using NZWalks.API.Repositories.Implementation;
 using NZWalks.API.Repositories.Interface;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/NZWalks_Log.txt", rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Information()
+    .CreateLogger();
+
+builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(logger));
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -104,6 +114,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Inject the middleware into the pipeline
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -112,7 +125,7 @@ app.UseAuthorization();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
-    RequestPath = "Images"
+    RequestPath = "/Images"
 });
 
 app.MapControllers();
